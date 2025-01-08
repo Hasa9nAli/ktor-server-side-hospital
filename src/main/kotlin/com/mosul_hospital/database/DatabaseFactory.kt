@@ -1,6 +1,6 @@
 package com.mosul_hospital.database
 
-import com.mosul_hospital.srevecies.doctorUser.data.PatientsReceptionInfo
+import com.mosul_hospital.srevecies.receptionUser.data.PatientsReceptionInfo
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils

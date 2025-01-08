@@ -1,4 +1,4 @@
-package com.mosul_hospital.srevecies.doctorUser.domain
+package com.mosul_hospital.srevecies.receptionUser.domain
 
 data class PatientInitInfo(
     val patientId : String,

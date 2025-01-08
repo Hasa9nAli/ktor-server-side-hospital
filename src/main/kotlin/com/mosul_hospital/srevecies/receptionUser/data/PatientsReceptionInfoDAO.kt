@@ -1,6 +1,6 @@
-package com.mosul_hospital.srevecies.doctorUser.data
+package com.mosul_hospital.srevecies.receptionUser.data
 
-import com.mosul_hospital.srevecies.doctorUser.domain.PatientInitInfo
+import com.mosul_hospital.srevecies.receptionUser.domain.PatientInitInfo
 
 interface PatientsReceptionInfoDAO {
 
