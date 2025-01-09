@@ -1,6 +1,6 @@
-package com.mosul_hospital.srevecies.receptionUser.data
+package com.mosul_hospital.srevecies.receptionUser.data.dao
 
-import com.mosul_hospital.srevecies.receptionUser.domain.PatientInitInfo
+import com.mosul_hospital.srevecies.receptionUser.data.model.PatientInitInfo
 
 interface PatientsReceptionInfoDAO {
 
@@ -9,5 +9,7 @@ interface PatientsReceptionInfoDAO {
     suspend fun getPatientInfo(patientId: String): PatientInitInfo?
 
     suspend fun getPatientByName(patientName: String): List<PatientInitInfo>
+
+    suspend fun getAllPatients(): List<PatientInitInfo>
 
 }

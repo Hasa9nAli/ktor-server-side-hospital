@@ -1,8 +1,11 @@
-package com.mosul_hospital.srevecies.receptionUser.data
+package com.mosul_hospital.srevecies.receptionUser.data.dao
 
 import com.mosul_hospital.database.DatabaseFactory.dbQuery
-import com.mosul_hospital.srevecies.receptionUser.domain.PatientInitInfo
+import com.mosul_hospital.srevecies.receptionUser.data.model.PatientInitInfo
+import com.mosul_hospital.srevecies.receptionUser.data.tables.PatientsReceptionInfo
+import com.mosul_hospital.srevecies.receptionUser.data.tables.toPatientReceptionInfo
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.selectAll
 
 class PatientsReceptionInfoDAOImp: PatientsReceptionInfoDAO {
@@ -46,8 +49,18 @@ class PatientsReceptionInfoDAOImp: PatientsReceptionInfoDAO {
     override suspend fun getPatientByName(patientName: String): List<PatientInitInfo> {
         return dbQuery {
             PatientsReceptionInfo
-                .selectAll().where { PatientsReceptionInfo.patientFullName eq patientName }
-                .map { row -> toPatientReceptionInfo(row) }
+                .selectAll().where { PatientsReceptionInfo.patientFullName.lowerCase() like "%${patientName.lowercase()}%" }
+                .map { toPatientReceptionInfo(it) }
+        }
+    }
+
+    override suspend fun getAllPatients(): List<PatientInitInfo> {
+        return dbQuery {
+            PatientsReceptionInfo
+                .selectAll()
+                .map { toPatientReceptionInfo(it) }
         }
     }
 }
+
+val patientsReceptionDAO = PatientsReceptionInfoDAOImp()
