@@ -1,6 +1,6 @@
-package com.mosul_hospital.srevecies.receptionUser.data
+package com.mosul_hospital.srevecies.receptionUser.data.tables
 
-import com.mosul_hospital.srevecies.receptionUser.domain.PatientInitInfo
+import com.mosul_hospital.srevecies.receptionUser.data.model.PatientInitInfo
 import org.jetbrains.exposed.sql.Table
 
 // create table

@@ -1,11 +1,14 @@
-package com.mosul_hospital.srevecies.receptionUser.domain
+package com.mosul_hospital.srevecies.receptionUser.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PatientInitInfo(
-    val patientId : String,
-    val patientFullName : String,
-    val patientMotherName : String,
-    val patientAge : Int,
-    val patientPhoneNumber:String,
+    val patientId: String,
+    val patientFullName: String,
+    val patientMotherName: String,
+    val patientAge: Int,
+    val patientPhoneNumber: String,
     val patientGender: String,
     val patientCompanionName: String,
     val patientCompanionPhoneNumber: String,
