@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 }
 
-group = "com.mosul_hospital"
+group = "com.mosul_ hospital"
 version = "0.0.1"
 
 application {
