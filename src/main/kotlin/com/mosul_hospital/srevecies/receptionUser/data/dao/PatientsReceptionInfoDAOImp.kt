@@ -4,6 +4,8 @@ import com.mosul_hospital.database.DatabaseFactory.dbQuery
 import com.mosul_hospital.srevecies.receptionUser.data.model.PatientInitInfo
 import com.mosul_hospital.srevecies.receptionUser.data.tables.PatientsReceptionInfo
 import com.mosul_hospital.srevecies.receptionUser.data.tables.toPatientReceptionInfo
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.selectAll
@@ -61,6 +63,13 @@ class PatientsReceptionInfoDAOImp: PatientsReceptionInfoDAO {
                 .map { toPatientReceptionInfo(it) }
         }
     }
+
+    override suspend fun deletePatientById(patientId: String): Boolean {
+        return dbQuery {
+            PatientsReceptionInfo.deleteWhere { PatientsReceptionInfo.patientId eq patientId } > 0
+        }
+    }
+
 }
 
 val patientsReceptionDAO = PatientsReceptionInfoDAOImp()

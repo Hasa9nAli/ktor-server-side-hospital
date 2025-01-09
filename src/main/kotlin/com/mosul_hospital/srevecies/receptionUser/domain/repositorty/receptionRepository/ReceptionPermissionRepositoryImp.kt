@@ -42,7 +42,7 @@ class ReceptionPermissionRepositoryImp: ReceptionPermissionRepository {
             isHavSurgeryHistory = isHavSurgeryHistory
         )
 
-        return if(patientsReceptionDAO.insertPatientInfo(newPatient)) newPatient else null
+        return if (patientsReceptionDAO.insertPatientInfo(newPatient)) newPatient else null
     }
 
     override suspend fun getPatientInfo(patientId: String): PatientInitInfo? {
@@ -54,7 +54,12 @@ class ReceptionPermissionRepositoryImp: ReceptionPermissionRepository {
     }
 
     override suspend fun getAllPatients(): List<PatientInitInfo> {
-       return patientsReceptionDAO.getAllPatients()
+        return patientsReceptionDAO.getAllPatients()
     }
+
+    override suspend fun deletePatientById(patientId: String): Boolean {
+        return patientsReceptionDAO.deletePatientById(patientId)
+    }
+
 }
 val receptionPermissionRepo = ReceptionPermissionRepositoryImp()

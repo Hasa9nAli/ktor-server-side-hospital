@@ -12,4 +12,7 @@ interface PatientsReceptionInfoDAO {
 
     suspend fun getAllPatients(): List<PatientInitInfo>
 
+    suspend fun deletePatientById(patientId: String): Boolean
+
+
 }

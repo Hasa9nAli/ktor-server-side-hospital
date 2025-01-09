@@ -27,4 +27,7 @@ interface ReceptionPermissionRepository {
     suspend fun getPatientByName(patientName: String): List<PatientInitInfo>
 
     suspend fun getAllPatients(): List<PatientInitInfo>
+
+    suspend fun deletePatientById(patientId: String): Boolean
+
 }
