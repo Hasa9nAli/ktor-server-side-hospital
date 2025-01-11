@@ -7,5 +7,4 @@ data class DoctorInfo(
     val doctorId: String,
     val doctorName: String,
     val doctorSpecification: String,
-    val casesTreatedByThisDoctor: List<PatientCase>
 )
