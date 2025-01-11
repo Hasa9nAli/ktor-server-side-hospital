@@ -1,5 +1,8 @@
 package com.mosul_hospital.database
 
+import com.mosul_hospital.srevecies.doctorUser.data.tables.CaseNotesTable
+import com.mosul_hospital.srevecies.doctorUser.data.tables.DoctorInfoTable
+import com.mosul_hospital.srevecies.doctorUser.data.tables.PatientCaseTable
 import com.mosul_hospital.srevecies.receptionUser.data.tables.PatientsReceptionInfo
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
@@ -17,6 +20,9 @@ object DatabaseFactory {
         )
         transaction {
             SchemaUtils.create(PatientsReceptionInfo)
+            SchemaUtils.create(DoctorInfoTable)
+            SchemaUtils.create(PatientCaseTable)
+            SchemaUtils.create(CaseNotesTable)
         }
     }
 
