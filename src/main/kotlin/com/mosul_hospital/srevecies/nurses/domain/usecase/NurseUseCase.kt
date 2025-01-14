@@ -4,13 +4,13 @@ import com.mosul_hospital.srevecies.nurses.domain.entities.NurseInfo
 
 interface NurseUseCase{
 
-    fun addNewNurse(nurseInfo:NurseInfo ): Boolean
+    suspend fun addNewNurse(nurseInfo:NurseInfo ): Boolean
 
-    fun deleteNurse(nurseId: String): Boolean
+    suspend fun deleteNurse(nurseId: String): Boolean
 
-    fun updateNurseInfo(nurseInfo: NurseInfo): Boolean
+    suspend fun updateNurseInfo(nurseInfo: NurseInfo): Boolean
 
-    fun getAllNurses(): List<NurseInfo>
+    suspend fun getAllNurses(): List<NurseInfo>
 
 
 }
