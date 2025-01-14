@@ -8,6 +8,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 
@@ -19,7 +20,7 @@ fun Route.nurseRoute(){
             call.respond(HttpStatusCode.OK, nurses)
         }
 
-        get("/add"){
+        post("/add"){
             try {
                 val newNurse = call.receive<NurseInfo>()
                 val result = nurseRepo.addNewNurse(newNurse)
