@@ -2,6 +2,7 @@ package com.mosul_hospital.database
 
 import com.mosul_hospital.srevecies.doctorUser.data.tables.DoctorInfoTable
 import com.mosul_hospital.srevecies.doctorUser.data.tables.PatientCaseTable
+import com.mosul_hospital.srevecies.laboratory.data.tables.LaboratoryTable
 import com.mosul_hospital.srevecies.nurses.data.tables.NurseTable
 import com.mosul_hospital.srevecies.radology.data.tables.RadiologyTable
 import com.mosul_hospital.srevecies.receptionUser.data.tables.PatientsReceptionInfo
@@ -25,6 +26,7 @@ object DatabaseFactory {
             SchemaUtils.create(PatientCaseTable)
             SchemaUtils.create(NurseTable)
             SchemaUtils.create(RadiologyTable)
+            SchemaUtils.create(LaboratoryTable)
         }
     }
 
