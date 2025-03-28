@@ -1,6 +1,7 @@
 package com.mosul_hospital.srevecies.receptionUser.data.model
 
 import kotlinx.serialization.Serializable
+import java.util.Base64
 
 @Serializable
 data class PatientInitInfo(
@@ -19,5 +20,15 @@ data class PatientInitInfo(
     val previousSurgeryHistory: String,
     val doctorName: String,
     val isHaveAllergyToTreatment: Boolean,
-    val isHavSurgeryHistory: Boolean
-)
+    val isHavSurgeryHistory: Boolean,
+    val attachment: List<ByteArray> = emptyList(),
+    val isDoctorSignature: Boolean,
+    val isLaboratorySignature: Boolean,
+    val isAcceptPharmacySignature: Boolean,
+    val isRejectionPharmacySignature: Boolean,
+    val isTreatmentIsDone: Boolean
+) {
+    fun getAttachmentBase64(): List<String> {
+        return attachment.map { Base64.getEncoder().encodeToString(it) }
+    }
+}

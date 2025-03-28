@@ -21,7 +21,13 @@ class ReceptionPermissionRepositoryImp: ReceptionPermissionRepository {
         previousSurgeryHistory: String,
         doctorName: String,
         isHaveAllergyToTreatment: Boolean,
-        isHavSurgeryHistory: Boolean
+        isHavSurgeryHistory: Boolean,
+        attachment: List<ByteArray>,
+        isDoctorSignature: Boolean,
+        isLaboratorySignature: Boolean,
+        isAcceptPharmacySignature: Boolean,
+        isRejectionPharmacySignature: Boolean,
+        isTreatmentIsDone: Boolean
     ): PatientInitInfo? {
         val newPatient = PatientInitInfo(
             patientId = UUID.randomUUID().toString(),
@@ -39,7 +45,13 @@ class ReceptionPermissionRepositoryImp: ReceptionPermissionRepository {
             previousSurgeryHistory = previousSurgeryHistory,
             doctorName = doctorName,
             isHaveAllergyToTreatment = isHaveAllergyToTreatment,
-            isHavSurgeryHistory = isHavSurgeryHistory
+            isHavSurgeryHistory = isHavSurgeryHistory,
+            attachment = attachment,
+            isDoctorSignature = isDoctorSignature,
+            isLaboratorySignature = isLaboratorySignature,
+            isAcceptPharmacySignature = isAcceptPharmacySignature,
+            isRejectionPharmacySignature = isRejectionPharmacySignature,
+            isTreatmentIsDone = isTreatmentIsDone
         )
 
         return if (patientsReceptionDAO.insertPatientInfo(newPatient)) newPatient else null
@@ -60,6 +72,6 @@ class ReceptionPermissionRepositoryImp: ReceptionPermissionRepository {
     override suspend fun deletePatientById(patientId: String): Boolean {
         return patientsReceptionDAO.deletePatientById(patientId)
     }
-
 }
-val receptionPermissionRepo = ReceptionPermissionRepositoryImp()
+
+val receptionPermissionRepo: ReceptionPermissionRepository = ReceptionPermissionRepositoryImp()

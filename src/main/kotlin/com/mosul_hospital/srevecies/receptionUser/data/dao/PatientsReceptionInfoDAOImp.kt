@@ -4,54 +4,61 @@ import com.mosul_hospital.database.DatabaseFactory.dbQuery
 import com.mosul_hospital.srevecies.receptionUser.data.model.PatientInitInfo
 import com.mosul_hospital.srevecies.receptionUser.data.tables.PatientsReceptionInfo
 import com.mosul_hospital.srevecies.receptionUser.data.tables.toPatientReceptionInfo
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.selectAll
 
+
 class PatientsReceptionInfoDAOImp: PatientsReceptionInfoDAO {
     override suspend fun insertPatientInfo(patientReceptionInfo: PatientInitInfo): Boolean {
-        val queryResult = dbQuery{
+        return dbQuery {
             val insertStatement = PatientsReceptionInfo.insert {
                 it[patientId] = patientReceptionInfo.patientId
                 it[patientFullName] = patientReceptionInfo.patientFullName
                 it[patientMotherName] = patientReceptionInfo.patientMotherName
                 it[patientAge] = patientReceptionInfo.patientAge
                 it[patientPhoneNumber] = patientReceptionInfo.patientPhoneNumber
-                it[patientCompanionName] = patientReceptionInfo.patientCompanionName
                 it[gender] = patientReceptionInfo.patientGender
-                it[bloodType] = patientReceptionInfo.bloodType
-                it[isHaveAllergyToTreatment] = patientReceptionInfo.isHaveAllergyToTreatment
-                it[isHavSurgeryHistory] = patientReceptionInfo.isHavSurgeryHistory
-                it[howArriveToHospital] = patientReceptionInfo.howArriveToHospital
-                it[job] = patientReceptionInfo.job
-                it[maritalStatus] = patientReceptionInfo.maritalStatus
+                it[patientCompanionName] = patientReceptionInfo.patientCompanionName
                 it[patientCompanionPhoneNumber] = patientReceptionInfo.patientCompanionPhoneNumber
+                it[maritalStatus] = patientReceptionInfo.maritalStatus
+                it[bloodType] = patientReceptionInfo.bloodType
+                it[job] = patientReceptionInfo.job
+                it[howArriveToHospital] = patientReceptionInfo.howArriveToHospital
                 it[previousSurgeryHistory] = patientReceptionInfo.previousSurgeryHistory
                 it[doctorName] = patientReceptionInfo.doctorName
-                     }
-                insertStatement.resultedValues?.singleOrNull()?.let { row ->
-                     toPatientReceptionInfo(row)
-                }
+                it[isHaveAllergyToTreatment] = patientReceptionInfo.isHaveAllergyToTreatment
+                it[isHavSurgeryHistory] = patientReceptionInfo.isHavSurgeryHistory
+                it[attachment] = Json.encodeToString(patientReceptionInfo.getAttachmentBase64())
+                it[isDoctorSignature] = patientReceptionInfo.isDoctorSignature
+                it[isLaboratorySignature] = patientReceptionInfo.isLaboratorySignature
+                it[isAcceptPharmacySignature] = patientReceptionInfo.isAcceptPharmacySignature
+                it[isRejectionPharmacySignature] = patientReceptionInfo.isRejectionPharmacySignature
+                it[isTreatmentIsDone] = patientReceptionInfo.isTreatmentIsDone
+            }
+            insertStatement.resultedValues?.singleOrNull() != null
         }
-        return queryResult != null
     }
 
     override suspend fun getPatientInfo(patientId: String): PatientInitInfo? {
         return dbQuery {
             PatientsReceptionInfo
-                .selectAll().where { PatientsReceptionInfo.patientId eq patientId }
-                .map { row -> toPatientReceptionInfo(row) }
+                .selectAll()
+                .where { PatientsReceptionInfo.patientId eq patientId }
+                .map { toPatientReceptionInfo(it) }
                 .singleOrNull()
         }
-
     }
 
     override suspend fun getPatientByName(patientName: String): List<PatientInitInfo> {
         return dbQuery {
             PatientsReceptionInfo
-                .selectAll().where { PatientsReceptionInfo.patientFullName.lowerCase() like "%${patientName.lowercase()}%" }
+                .selectAll()
+                .where { PatientsReceptionInfo.patientFullName.lowerCase() like "%${patientName.lowercase()}%" }
                 .map { toPatientReceptionInfo(it) }
         }
     }
@@ -69,7 +76,6 @@ class PatientsReceptionInfoDAOImp: PatientsReceptionInfoDAO {
             PatientsReceptionInfo.deleteWhere { PatientsReceptionInfo.patientId eq patientId } > 0
         }
     }
-
 }
 
-val patientsReceptionDAO = PatientsReceptionInfoDAOImp()
+val patientsReceptionDAO: PatientsReceptionInfoDAO = PatientsReceptionInfoDAOImp()

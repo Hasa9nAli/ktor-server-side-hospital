@@ -1,7 +1,13 @@
+@file:Suppress("DEPRECATION")
+
 import com.mosul_hospital.srevecies.receptionUser.data.model.PatientInitInfo
 import com.mosul_hospital.srevecies.receptionUser.domain.repositorty.receptionRepository.receptionPermissionRepo
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
+import io.ktor.http.content.streamProvider
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
@@ -10,24 +16,28 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 
-fun Route.receptionRoute(){
-    route("/reception"){
+
+
+import kotlinx.serialization.json.Json
+
+fun Route.receptionRoute() {
+    route("/reception") {
         get {
-            call.respondText (
-                text =  "Hello, Reception!",
-                status = HttpStatusCode.OK)
+            call.respondText(
+                text = "Hello, Reception!",
+                status = HttpStatusCode.OK
+            )
         }
-        post("/addNewPatient"){
+
+        // JSON endpoint
+        post("/addNewPatient") {
             try {
-                // Receive JSON body as PatientInitInfo
                 val patientInfo = call.receive<PatientInitInfo>()
-                print(patientInfo)
-                // Validate the received data
-                if (patientInfo.patientFullName.isBlank()) return@post call.respondText(
-                    text = "patientFullName is required",
-                    status = HttpStatusCode.BadRequest
-                )
-                // Add other validations as needed...
+
+                if (patientInfo.patientFullName.isBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, "patientFullName is required")
+                    return@post
+                }
 
                 val result = receptionPermissionRepo.insertPatientInfo(
                     patientFullName = patientInfo.patientFullName,
@@ -44,22 +54,85 @@ fun Route.receptionRoute(){
                     previousSurgeryHistory = patientInfo.previousSurgeryHistory,
                     doctorName = patientInfo.doctorName,
                     isHaveAllergyToTreatment = patientInfo.isHaveAllergyToTreatment,
-                    isHavSurgeryHistory = patientInfo.isHavSurgeryHistory
+                    isHavSurgeryHistory = patientInfo.isHavSurgeryHistory,
+                    attachment = patientInfo.attachment,
+                    isDoctorSignature = patientInfo.isDoctorSignature,
+                    isLaboratorySignature = patientInfo.isLaboratorySignature,
+                    isAcceptPharmacySignature = patientInfo.isAcceptPharmacySignature,
+                    isRejectionPharmacySignature = patientInfo.isRejectionPharmacySignature,
+                    isTreatmentIsDone = patientInfo.isTreatmentIsDone
                 )
-                if(result != null)
-                    call.respond(message = result, status = HttpStatusCode.OK)
-                else
-                    return@post call.respondText(
-                        text = "error add new patient ",
-                        status = HttpStatusCode.InternalServerError
-                    )
 
+                if (result != null) {
+                    call.respond(HttpStatusCode.OK, result)
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError, "Error adding new patient")
+                }
             } catch (e: Exception) {
-                call.respondText(
-                    text = e.message.toString(),
-                    status = HttpStatusCode.BadRequest
+                call.respond(HttpStatusCode.BadRequest, "Error: ${e.message}")
+            }
+        }
 
+        // Multipart endpoint for file uploads
+        post("/addPatientWithAttachments") {
+            try {
+                val multipart = call.receiveMultipart()
+                var patientInfo: PatientInitInfo? = null
+                val attachments = mutableListOf<ByteArray>()
+
+                multipart.forEachPart { part ->
+                    when (part) {
+                        is PartData.FormItem -> {
+                            if (part.name == "patient") {
+                                patientInfo = Json.decodeFromString(part.value)
+                            }
+                        }
+                        is PartData.FileItem -> {
+                            if (part.name == "attachments") {
+                                attachments.add(part.streamProvider().readBytes())
+                            }
+                        }
+                        else -> {}
+                    }
+                    part.dispose()
+                }
+
+                if (patientInfo == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Patient data is required")
+                    return@post
+                }
+
+                val result = receptionPermissionRepo.insertPatientInfo(
+                    patientFullName = patientInfo?.patientFullName ?: "",
+                    patientMotherName = patientInfo?.patientMotherName ?: "" ,
+                    patientAge = patientInfo?.patientAge ?: 0,
+                    patientPhoneNumber = patientInfo?.patientPhoneNumber ?: "",
+                    patientGender = patientInfo?.patientGender ?: "",
+                    patientCompanionName = patientInfo?.patientCompanionName?: "",
+                    patientCompanionPhoneNumber = patientInfo?.patientCompanionPhoneNumber ?: "",
+                    maritalStatus = patientInfo?.maritalStatus ?: "",
+                    bloodType = patientInfo?.bloodType ?: "",
+                    job = patientInfo?.job ?: "",
+                    howArriveToHospital = patientInfo?.howArriveToHospital ?: "",
+                    previousSurgeryHistory = patientInfo?.previousSurgeryHistory ?:"",
+                    doctorName = patientInfo?.doctorName ?: "",
+                    isHaveAllergyToTreatment = patientInfo?.isHaveAllergyToTreatment ?: false,
+                    isHavSurgeryHistory = patientInfo?.isHavSurgeryHistory?: false,
+                    attachment = attachments,
+                    isDoctorSignature = patientInfo?.isDoctorSignature ?: false,
+                    isLaboratorySignature = patientInfo?.isLaboratorySignature ?: false,
+                    isAcceptPharmacySignature = patientInfo?.isAcceptPharmacySignature ?: false,
+                    isRejectionPharmacySignature = patientInfo?.isRejectionPharmacySignature ?: false,
+                    isTreatmentIsDone = patientInfo?.isTreatmentIsDone ?: false
                 )
+
+                if (result != null) {
+                    call.respond(HttpStatusCode.Created, result)
+                } else {
+                    call.respond(HttpStatusCode.InternalServerError, "Failed to save patient")
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest, "Error: ${e.message}")
             }
         }
 
@@ -78,7 +151,7 @@ fun Route.receptionRoute(){
 
         get("/patientByName") {
             val patientName = call.request.queryParameters["name"]
-            if (patientName == null || patientName.isBlank()) {
+            if (patientName.isNullOrBlank()) {
                 call.respond(HttpStatusCode.BadRequest, "Query parameter 'name' is required")
                 return@get
             }
@@ -88,7 +161,7 @@ fun Route.receptionRoute(){
                 if (patients.isNotEmpty()) {
                     call.respond(HttpStatusCode.OK, patients)
                 } else {
-                    call.respond(HttpStatusCode.NotFound, "No patients found with the name $patientName")
+                    call.respond(HttpStatusCode.NotFound, "No patients found with name '$patientName'")
                 }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "An error occurred: ${e.message}")
@@ -97,7 +170,7 @@ fun Route.receptionRoute(){
 
         delete("/deletePatient/{patientId}") {
             val patientId = call.parameters["patientId"]
-            if (patientId == null || patientId.isBlank()) {
+            if (patientId.isNullOrBlank()) {
                 call.respond(HttpStatusCode.BadRequest, "Patient ID is required")
                 return@delete
             }

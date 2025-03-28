@@ -3,7 +3,6 @@ package com.mosul_hospital.srevecies.receptionUser.domain.repositorty.receptionR
 import com.mosul_hospital.srevecies.receptionUser.data.model.PatientInitInfo
 
 interface ReceptionPermissionRepository {
-
     suspend fun insertPatientInfo(
         patientFullName: String,
         patientMotherName: String,
@@ -19,15 +18,17 @@ interface ReceptionPermissionRepository {
         previousSurgeryHistory: String,
         doctorName: String,
         isHaveAllergyToTreatment: Boolean,
-        isHavSurgeryHistory: Boolean
+        isHavSurgeryHistory: Boolean,
+        attachment: List<ByteArray>,
+        isDoctorSignature: Boolean,
+        isLaboratorySignature: Boolean,
+        isAcceptPharmacySignature: Boolean,
+        isRejectionPharmacySignature: Boolean,
+        isTreatmentIsDone: Boolean
     ): PatientInitInfo?
 
     suspend fun getPatientInfo(patientId: String): PatientInitInfo?
-
     suspend fun getPatientByName(patientName: String): List<PatientInitInfo>
-
     suspend fun getAllPatients(): List<PatientInitInfo>
-
     suspend fun deletePatientById(patientId: String): Boolean
-
 }
