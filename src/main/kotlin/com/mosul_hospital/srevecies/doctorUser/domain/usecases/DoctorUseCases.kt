@@ -12,4 +12,6 @@ interface DoctorUseCases {
     suspend fun updateDoctorInfo(doctorInfo: DoctorInfo): Boolean
 
     suspend fun getAllDoctors(): List<DoctorInfo>
+
+    suspend fun updateDoctorSignatureForSpecificPatient(patientId: String, isSigned: Boolean): Boolean
 }

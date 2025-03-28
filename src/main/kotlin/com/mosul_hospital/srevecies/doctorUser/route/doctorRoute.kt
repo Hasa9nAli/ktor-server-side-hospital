@@ -23,8 +23,6 @@ fun Route.doctorRoutes() {
         }
 
 
-
-        // Add a new doctor
         post("/add") {
             try {
                 val doctorInfo = call.receive<DoctorInfo>()
@@ -60,6 +58,34 @@ fun Route.doctorRoutes() {
                 call.respond(HttpStatusCode.OK, "Doctor updated successfully")
             } else {
                 call.respond(HttpStatusCode.InternalServerError, "Failed to update doctor")
+            }
+        }
+        // update the doctor signature of specific patient
+        put("/updateDoctorSignature/{patientId}") {
+            val patientId = call.parameters["patientId"] ?: run {
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Missing patient ID"))
+                return@put
+            }
+
+            try {
+                val updated = doctorRepo.updateDoctorSignatureForSpecificPatient(patientId, true)
+                if (updated) {
+                    call.respond(HttpStatusCode.OK, mapOf(
+                        "success" to true,
+                        "message" to "Doctor signature updated successfully",
+                        "patientId" to patientId
+                    ))
+                } else {
+                    call.respond(HttpStatusCode.NotFound, mapOf(
+                        "error" to "Patient not found",
+                        "patientId" to patientId
+                    ))
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, mapOf(
+                    "error" to "Failed to update doctor signature",
+                    "details" to e.message
+                ))
             }
         }
     }

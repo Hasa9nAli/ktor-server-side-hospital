@@ -5,6 +5,7 @@ import com.mosul_hospital.srevecies.doctorUser.data.tables.DoctorInfoTable
 import com.mosul_hospital.srevecies.doctorUser.domain.entities.DoctorInfo
 import com.mosul_hospital.srevecies.doctorUser.domain.mapper.toDoctorInfo
 import com.mosul_hospital.srevecies.doctorUser.domain.usecases.DoctorUseCases
+import com.mosul_hospital.srevecies.receptionUser.data.tables.PatientsReceptionInfo
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -54,6 +55,17 @@ class DoctorRepository : DoctorUseCases {
                 throw e
             }
         }
+    }
+
+    override suspend fun updateDoctorSignatureForSpecificPatient(
+        patientId: String,
+        isSigned: Boolean
+    ): Boolean{
+        return dbQuery {
+            PatientsReceptionInfo.update({PatientsReceptionInfo.patientId eq patientId}){
+                it[isDoctorSignature] = isSigned
+            }
+        } > 0
     }
 }
 

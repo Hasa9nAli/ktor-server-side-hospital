@@ -4,8 +4,8 @@ import org.jetbrains.exposed.sql.Table
 
 object PatientCaseTable : Table() {
         val caseId = varchar("caseId", 50)
-        val patientId = varchar("patientId", 50) // This should reference PatientInitInfo
-        val status = varchar("status", 50) // Status of the case, e.g., "current" or "treated"
+        val patientId = varchar("patientId", 50)
+        val status = varchar("status", 50)
 
     override val primaryKey: PrimaryKey = PrimaryKey(caseId)
 }
